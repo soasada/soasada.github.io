@@ -4,12 +4,12 @@ title: About
 permalink: /about/
 ---
 
-This is the blog personal of Nicolás Vargas Ortega and Adrián González Leiva. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
+This is the blog personal of Nicolás Vargas Ortega and Adrián González Leiva.
 
-You can find the source code for the Jekyll new theme at:
-{% include icon-github.html username="jglovier" %} /
-[jekyll-new](https://github.com/jglovier/jekyll-new)
+You can find the github profile of Nicolás Vargas Ortega at:
+{% include icon-github.html username="soasada" %} /
+[soasada](https://github.com/soasada)
 
-You can find the source code for Jekyll at
-{% include icon-github.html username="jekyll" %} /
-[jekyll](https://github.com/jekyll/jekyll)
+You can find the source code of nodexploit at
+{% include icon-github.html username="soasada" %} /
+[nodexploit](https://github.com/soasada/soasada.github.io)

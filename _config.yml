@@ -24,7 +24,6 @@ theme:
   facebook:
   flickr:
   github: "soasada"
-  github: "soutoner"
   google_plus:
   instagram:
   linkedin:  # Full URL
@@ -34,12 +33,12 @@ theme:
   stack_exchange:  # Full URL
   steam:
   tumblr:
-  twitter: "twitter"
+  # twitter: "twitter"
   wordpress:
   youtube:
 
   # Scripts
-  google_analytics: # Tracking ID, e.g. "UA-000000-01"
+  google_analytics: UA-61823229-1 # Tracking ID, e.g. "UA-000000-01"
   disqus_shortname:
   katex: true # Enable if using math markup
 

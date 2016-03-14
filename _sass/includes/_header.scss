@@ -29,7 +29,7 @@
   .site-nav {
     ul {
       margin: 0;
-      padding: 0;
+      padding: $padding-small/2 $padding-small 0 0;
       list-style: none;
       line-height: 1.5;
       float: right;

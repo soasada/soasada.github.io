@@ -2,12 +2,11 @@
 layout: page
 title: About
 permalink: /about/
+feature-img: "img/sample_feature_img_2.png"
 ---
 
-This is the blog personal of Nicolás Vargas Ortega and Adrián González Leiva.
+Type Theme is a free and open-source theme for [Jekyll](http://jekyllrb.com/), licensed under the MIT License.
 
-You can find the github profile of Nicolás Vargas Ortega at:
-{% include icon-github.html username="soasada" %}
+Head over to the [theme's documentation](https://rohanchandra.github.io/project/type/) for much more information about Type Theme or to install this theme on your own Jekyll site.
 
-You can find the source code of nodexploit at
-[nodexploit](https://github.com/soasada/soasada.github.io)
+This file is an example of a page in Jekyll, that automatically shows up in the header navigation, you can delete or modify this file freely.

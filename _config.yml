@@ -24,7 +24,6 @@ theme:
   facebook:
   flickr:
   github: "soasada"
-  github: "soutoner"
   google_plus:
   instagram:
   linkedin:  # Full URL
@@ -34,7 +33,7 @@ theme:
   stack_exchange:  # Full URL
   steam:
   tumblr:
-  twitter: "twitter"
+  # twitter: "twitter"
   wordpress:
   youtube:
 

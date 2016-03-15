@@ -31,7 +31,7 @@
   .site-nav {
     ul {
       margin: 0;
-      padding: $padding-small/2 $padding-small 0 0;
+      padding: $fixed-padding-small * 2 $fixed-padding-small * 2 0 0;
       list-style: none;
       line-height: 1.5;
       float: right;
@@ -41,15 +41,6 @@
       display: inline;
       float: left;
       margin-right: 0.4em;
-    }
-    @media (max-width: 1100px) {
-      ul {
-        display: inline-block;
-        float: left;
-        padding-top: $padding-small;
-        text-align: left;
-        width: 100%;
-      }
     }
   }
 }

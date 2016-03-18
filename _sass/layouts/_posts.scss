@@ -6,6 +6,8 @@ article,
   width: 100%;
 }
 article {
+  // Space between about author and nav
+  padding-bottom: 20px;
   header {
     margin-bottom: 6%;
     text-align: center;
@@ -78,4 +80,24 @@ header {
     vertical-align: middle;
   }
 }
+// Code
+pre {
+  @extend %padding-code;
+  background-color: $background-color-code;
+  border-radius: 5px;
+}
 
+code {
+  background-color: $background-color-code;
+}
+// Author div
+.post-author {
+  @extend %padding-small;
+  text-align: center;
+  border-radius: 3px;
+  p {
+    max-width: 75%;
+    margin:auto;
+    font-style: italic;
+  }
+}

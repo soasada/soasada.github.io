@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Detect Javascript on the server side
+author: soutoner
 ---
 
 Willing to deploy an awesome feature of your web entirely written in Javascript? 

@@ -2,6 +2,22 @@
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://nodexploit.com" # the base hostname & protocol for your site
 
+authors:
+  soasada:
+      display_name: Nicolas Vargas
+      gravatar: 82aecf33c6b2fb5b6fae0db3a476361e
+      email: soasada@nodexploit.com
+      about_me:
+      about:
+      github: soasada
+  soutoner:
+    display_name: Adrian Gonzalez
+    gravatar: f772263b9b40093644f33332b1f2bed1
+    email: soutoner@nodexploit.com
+    about_me:
+    about:
+    github: soutoner
+
 # THEME-SPECIFIC CONFIGURATION
 theme:
   # Meta
@@ -23,7 +39,7 @@ theme:
   dribbble:
   facebook:
   flickr:
-  github: "soasada"
+  github: soasada/soasada.github.io
   google_plus:
   instagram:
   linkedin:  # Full URL
@@ -39,7 +55,7 @@ theme:
 
   # Scripts
   google_analytics: UA-61823229-1 # Tracking ID, e.g. "UA-000000-01"
-  disqus_shortname:
+  disqus_shortname: nodexploit
   katex: true # Enable if using math markup
 
   # Localization strings
@@ -55,7 +71,7 @@ theme:
   google_fonts: "Source+Sans+Pro:400,700,700italic,400italic"
 
   # Post navigation
-  post_navigation: false
+  post_navigation: true
 
 # PAGINATION
 paginate: 5
@@ -63,7 +79,7 @@ paginate_path: "blog/page:num"
 
 # BUILD SETTINGS
 markdown: kramdown
-highlighter: rouge
+highlighter: pygments
 sass:
   sass_dir: _sass
   style: :compressed

@@ -5,7 +5,7 @@ permalink: /about/
 ---
 ![Nicolas Vargas Ortega](/assets/nico_perfil.jpeg)
 
-I started working with software (professionally) in early 2014 and in the middle of 2017 I began to realize that I didn't know anything about object-oriented programming, functional programming, SOLID and software design patterns. This blog is an attempt to help others to find the way to start becoming better developers.
+I started working with software (professionally) in early 2014 and in the middle of 2017 I started getting interested in how to become a better developer. I will write about OOP, FP, SOLID, software design patterns and eventually my personal experience in the software industry, all of this with Java and sometimes with JS.
 
 A list of books that changed my career:
 

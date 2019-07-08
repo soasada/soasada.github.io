@@ -9,8 +9,8 @@ I started working with software (professionally) in early 2014 and in the middle
 
 A list of books that changed my career:
 
-* Effective Java 3rd Edition.
-* Domain Driven Design.
-* GoF.
-* Clean code.
-* Object-Oriented Design Heuristics.
+* Effective Java 3rd Edition
+* Domain Driven Design
+* GoF
+* Clean code
+* Object-Oriented Design Heuristics

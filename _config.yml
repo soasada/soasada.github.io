@@ -15,7 +15,7 @@
 # in the templates via {{ site.myvariable }}.
 title: "Nodexploit.com"
 email: nvortega92@gmail.com
-description: Just me talking about software stuff. Sometimes I will talk about myself and my professional experience in the software industry. 
+description: Software engineering stuff
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: jekyllrb

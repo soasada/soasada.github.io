@@ -6,7 +6,7 @@ categories: me thoughts
 ---
 I have left my current job a few days ago, a job in which I have been working for almost two years (or more precisely, one year and eight months). A time in which I became more humble and where I have realised that I had no idea about software engineering.
 
-In my experience in this company, I had the possibility to design and develop a project from scratch side by side with a couple of brilliant developers. I have learned things like:
+In my experience in this company, I had the opportunity to design and develop a project from scratch side by side with a couple of brilliant developers. I have learned things like:
 
 * Don't be afraid to refactor or redo the work of several days or even weeks if you have realised that those design decisions where wrong.
 * Without tests you are gonna to deliver a poor product.
@@ -16,8 +16,8 @@ In my experience in this company, I had the possibility to design and develop a 
 * How, where and when to say NO.
 * Estimate in a pessimistic way.
 * Don't leave TDD or any methodology because of the release date approaching.
-* Learn the basics not the tools.
+* Learn the basics in depth, learn the tools in a "horizontal" way (as much tools as you can) but not in depth.
 
 And a bunch of technical stuff... Yes, it's been a good experience, the best one I have had. But now are changing times.
 
-I'm going to write this blog with my experience in the software industry and I will try to write one post per month at least, I hope you enjoy reading it.
+I'm going to write this blog with my experience in the software industry and I will try to write one post for each month, I hope you enjoy reading it.

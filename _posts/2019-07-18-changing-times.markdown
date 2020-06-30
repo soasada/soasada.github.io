@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Changing times"
+title:  "Changing Times"
 date:   2019-07-18 21:35:20 +0200
 categories: me thoughts
 ---

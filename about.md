@@ -12,5 +12,4 @@ A list of books that changed my career:
 * Effective Java 3rd Edition
 * Domain Driven Design
 * GoF
-* Clean code
 * Object-Oriented Design Heuristics

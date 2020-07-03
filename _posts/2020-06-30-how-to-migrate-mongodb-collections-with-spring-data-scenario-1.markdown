@@ -75,4 +75,4 @@ As you can see, it's pretty easy to do the migration with Spring Data, the only 
 you want to decouple the saving from the migration if so, you could publish an event from here with the migrated user and subscribe to 
 it in another part of the application, but this is another history. 
 
-You can see the complete working code here: https://github.com/soasada/migrate-mongodb-collections-spring-data
+You can see the complete working code here: [GitHub repository](https://github.com/soasada/migrate-mongodb-collections-spring-data)

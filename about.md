@@ -5,11 +5,12 @@ permalink: /about/
 ---
 ![Nicolas Vargas Ortega](/assets/nico_perfil.jpeg)
 
-I'm Nicolás Vargas Ortega and I started working with software (professionally) in early 2014 and in the middle of 2017 I started getting interested in how to become a better developer. I will write about OOP, FP, SOLID, software design patterns and eventually my personal experience in the software industry.
+I am Nicolás Vargas Ortega, a software engineer interested in programming and design computer programs. Usually, 
+I work with web technologies, but I am also interested in compilers and operating systems.
 
-A list of books that changed my career:
+Also, I really enjoy working in side projects and writing this blog. You could check my GitHub to know more about my work.
 
-* Effective Java 3rd Edition
-* Domain Driven Design
-* GoF
-* Object-Oriented Design Heuristics
+List of side projects so far:
+
+1. **kemenu.com**
+  * A web application for menu digitalization.

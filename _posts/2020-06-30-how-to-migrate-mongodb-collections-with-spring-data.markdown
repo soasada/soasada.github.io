@@ -19,36 +19,41 @@ Imagine that you the have the following document:
 
 {% highlight kotlin %}
 @Document
-data class Person(
+data class User(
     @Id
     val id: String,
-    val name: String
+    val email: String
 ) {
-    constructor(name: String) : this(UUID.randomUUID().toString(), name)
+    constructor(email: String) : this(UUID.randomUUID().toString(), email)
 }
 {% endhighlight %}
 
-Then, a new requirement comes to you and you have to add a couple of attributes to audit this document. So far so good you add 
-them:
+Then, a new requirement comes to you and now users only can log in if they confirm the email. So far so good, you add 
+a new attribute to your document to handle that:
 
 {% highlight kotlin %}
 @Document
-data class Person(
+data class User(
     @Id
     val id: String,
-    val name: String,
-    @CreatedDate val createdAt: Instant = Instant.now(),
-    @LastModifiedDate val updatedAt: Instant = Instant.now()
+    val email: String,
+    val emailConfirmed: Boolean?
 ) {
-    constructor(name: String) : this(UUID.randomUUID().toString(), name)
+    constructor(email: String) : this(UUID.randomUUID().toString(), email, false)
+    
+    fun confirmEmail() = this.copy(emailConfirmed = true)
 }
 {% endhighlight %}
 
-In principle this could work, but **only for new documents**. What should you do with old ones? This is where the 
-problems begin. 
+In principle this could work, but **only for new users**. What should you do with old ones? Your old users might not be 
+able to log in into your application because they didn't confirm the email. Now you have a problem. 
 
-The proper way to do it lazily, is executing some logic **after loading an old document from the database.** Usually, when you 
-do that the attributes are unavailable, so you have two options here:
+A solution could be run an update query that adds this new attribute with a true value for each document in the collection. This solution 
+only works with collections with few users, but if you have a very big collection, the query could take hours or even days. 
+Are you gonna block the login for all those users during that time? No, you are not. 
+
+Another solution is to execute the confirmation logic **after loading an old user from the database.** What is an old user? An old 
+user means that the `emailConfirmed` comes with null
 
 1. If the attributes could be populated, you have to implement the logic somewhere. Hopefully, Spring Data MongoDB >= 3.0 
 has 

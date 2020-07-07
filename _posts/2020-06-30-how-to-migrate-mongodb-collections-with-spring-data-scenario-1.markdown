@@ -56,23 +56,36 @@ Another solution is to execute the confirmation logic **after loading an old use
 Well, first you need to recognize what an old user is, in our case an old user is one that does not have `emailConfirmed` flag (aka null). 
 Second, you need some kind of mechanism to execute the confirmation logic when Spring Data loads a user from the database and save it again. Hopefully, 
 Spring Data MongoDB >= 3.0 has a new `EntityCallback` called [ReactiveAfterConvertCallback](https://github.com/spring-projects/spring-data-mongodb/blob/master/spring-data-mongodb/src/main/java/org/springframework/data/mongodb/core/mapping/event/ReactiveAfterConvertCallback.java) 
-that does exactly this:
+that does exactly this, for example:
 
 {% highlight kotlin %}
 @Component
 class UserMigrator(private val applicationContext: ApplicationContext) : ReactiveAfterConvertCallback<User> {
     override fun onAfterConvert(entity: User, document: Document, collection: String): Publisher<User> = mono {
-        val migratedUser = if (entity.emailConfirmed != null) entity else entity.confirmEmail()
-        applicationContext.getBean(UserRepository::class.java).save(migratedUser)
-        return@mono migratedUser
+        if (entity.emailConfirmed != null) {
+            return@mono entity
+        } else {
+            val migratedUser = entity.confirmEmail()
+            applicationContext.getBean(UserRepository::class.java).save(migratedUser)
+            return@mono migratedUser
+        }
     }
 }
 {% endhighlight %}
 
+Obviously, this has the following trade-offs:
+
+1) You are making an extra I/O operation for every old user. 
+2) Now you have this code that eventually would be useless (because no more old users in database).
+
+For the first point, you have to think if it is important to save the object right there or maybe not. If the client requesting 
+that object is gonna make something with it and then save it, you could skip this save. For the second, well... try to remember 
+to remove the code when become useless.
+
 ### Conclusion
 
-As you can see, it's pretty easy to do the migration with Spring Data, the only thing that could be improved here is the saving, maybe 
-you want to decouple the saving from the migration if so, you could publish an event from here with the migrated user and subscribe to 
-it in another part of the application, but this is another history. 
+As you can see, it's pretty easy to do lazy migrations with Spring Data, as usual evolve a database is a pain in the neck and for 
+each case the logic of the migration could be really complex, be aware of using it with caution and not for all use cases of migrations 
+you could have, you could end with a lot of dead code.
 
 You can see the complete working code here: [GitHub repository](https://github.com/soasada/migrate-mongodb-collections-spring-data)

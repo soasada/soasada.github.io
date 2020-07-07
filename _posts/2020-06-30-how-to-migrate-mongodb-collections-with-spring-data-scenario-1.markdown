@@ -75,8 +75,8 @@ class UserMigrator(private val applicationContext: ApplicationContext) : Reactiv
 
 Obviously, this has the following trade-offs:
 
-1) You are making an extra I/O operation for every old user. 
-2) Now you have this code that eventually would be useless (because no more old users in database).
+1. You are making an extra I/O operation for every old user. 
+2. Now you have this code that eventually would be useless (because no more old users in database).
 
 For the first point, you have to think if it is important to save the object right there or maybe not. If the client requesting 
 that object is gonna make something with it and then save it, you could skip this save. For the second, well... try to remember 

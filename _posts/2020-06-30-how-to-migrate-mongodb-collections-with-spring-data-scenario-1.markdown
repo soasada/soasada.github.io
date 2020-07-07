@@ -84,8 +84,8 @@ to remove the code when become useless.
 
 ### Conclusion
 
-As you can see, it's pretty easy to do lazy migrations with Spring Data, as usual evolve a database is a pain in the neck and for 
-each case the logic of the migration could be really complex, be aware of using it with caution and not for all use cases of migrations 
-you could have, you could end with a lot of dead code.
+As you can see, it's pretty easy to do lazy migrations with Spring Data. Evolving a database is a pain in the neck and for 
+each case the migration logic could be really complex, be aware of using it with caution and not for all your migration use cases, 
+or you will end with a lot of dead code.
 
 You can see the complete working code here: [GitHub repository](https://github.com/soasada/migrate-mongodb-collections-spring-data)

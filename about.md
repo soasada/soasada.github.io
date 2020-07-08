@@ -36,4 +36,4 @@ List of side projects so far:
 
 ### Education
 
-* **Computer Science Degree | 2012 - 2016 | University of Malaga**
+#### Computer Science Degree (2012 - 2016), University of Malaga

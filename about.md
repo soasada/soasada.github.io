@@ -8,13 +8,18 @@ permalink: /about/
 I am Nicolás Vargas Ortega, a software engineer interested in programming and design computer programs. Usually, 
 I work with web technologies, but I am also interested in compilers and operating systems.
 
-Also, I really enjoy working in side projects and writing this blog. You could check my GitHub to know more about my work.
+I love to work in side projects and writing this blog. You could check my GitHub to know more about my work.
 
 List of side projects so far:
 
 1. **kemenu.com**
   * A web application for menu digitalization.
-  
+2. **uv.popokis.com**
+  * A web application done without backend framework, just an http server.
+3. **popok**
+  * Tiny library for make microservices with undertow, raw JDBC and async JSON parsing.
+4. **test.popokis.com**
+  * A web application done with Kotlin coroutines + Spring Webflux + Spring Security.
 ### Professional Experience
 
 | When     |      Where      |  What |
@@ -32,7 +37,7 @@ List of side projects so far:
 * **SQL:** MySQL
 * **NoSQL:** MongoDB
 * **CI/CD:** Jenkins, GitLab CI, GitHub Actions
-* **Brokers:** Kafka, RabbitMQ
+* **Brokers:** Kafka
 
 ### Education
 

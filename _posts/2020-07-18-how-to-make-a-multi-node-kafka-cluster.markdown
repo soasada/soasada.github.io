@@ -86,9 +86,9 @@ cp zookeeper.properties zookeeper3.properties
 ...and change the `dataDir` for each one, now you could launch each ZooKeeper server in each machine as follows (inside Kafka folder):
 
 {% highlight bash %}
-bin/zookeeper-server-start.sh config/zookeeper.properties &
-bin/zookeeper-server-start.sh config/zookeeper2.properties &
-bin/zookeeper-server-start.sh config/zookeeper3.properties &
+bin/zookeeper-server-start.sh config/zookeeper.properties & # in machine 1
+bin/zookeeper-server-start.sh config/zookeeper2.properties & # in machine 2
+bin/zookeeper-server-start.sh config/zookeeper3.properties & # in machine 3
 {% endhighlight %}
 
 If you execute `jps -l` you should see something like the following:
@@ -99,6 +99,40 @@ If you execute `jps -l` you should see something like the following:
 {% endhighlight %}
 
 ...which means that you have running your ZooKeeper server.
+
+### The Kafka cluster
+
+For the Kafka cluster we need to follow more or less the same steps than before, first edit `server.properties` file: 
+
+{% highlight bash %}
+# ZooKeeper
+zookeeper.connect=<IP1>:2181,<IP2>:2181,<IP3>:2181
+ 
+# Log configuration
+num.partitions=1
+default.replication.factor=3
+log.dir=/path/you/want
+ 
+# Other configurations
+broker.id=0 # 1 and 2 for the others
+listeners=[list of listeners]
+auto.create.topics.enable=false
+min.insync.replicas=2
+queued.max.requests=[number of concurrent requests]
+{% endhighlight %}
+
+Every config option means:
+
+**zookeeper.connect:** comma separated list of ZooKeeper servers.
+
+**num.partitions:** the default number of log partitions per topic. You could leave with 1 or change to the number you want. 
+Bear in mind that the number of partitions could be increased if you want to process messages in parallel (a consumer could process messages from one 
+or more partitions of a topic).
+
+**default.replication.factor:** default replication factors for automatically created topics. Replication factor 
+defines the number of copies of a topic in a Kafka cluster, in our case we have 3 machines, so we should put 3 here.
+
+**broker.id:** An integer representing the id of the broker. Start with 0 and increment by 1 for each new broker.
 
 ### References
 

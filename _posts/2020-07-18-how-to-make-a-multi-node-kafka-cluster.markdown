@@ -7,35 +7,38 @@ categories: kafka zookeeper distributed-systems
 ### Introduction
 
 Apache Kafka (from now on just Kafka) is one of the most frequently used message buses nowadays, and the reason is because 
-has some key features that makes it the perfect tool in some scenarios. Usually, is used as a Messaging System (for microservices 
-architectures, decoupling monoliths, etc), but could even be used as a Storage System or for Stream Processing. 
+has some key features that makes it the perfect tool in some scenarios (preserve consumption order per partition and allows parallel 
+consumption = scales very well). Usually, is used as a Messaging System (for microservices architectures, decoupling monoliths, etc), 
+but could even be used as a Storage System or for Stream Processing. 
 
 In this tutorial I will show you how to create a multi-node Kafka cluster with three different machines. Although, this tutorial is for administrators 
 I think that is worth read for those that use Kafka in his daily development. 
 
-Recently, for one of my side projects I had the need of create a totally different database from another one, but in insertion order, 
-I mean when there is an insertion in database A must be another in the same order in database B but the data coming from 
-A should be enriched before inserted in B. To do it, I choose Kafka since it allows to consume messages in order (per partition) and 
-to have fault tolerance a cluster is a must. The cluster has the following anatomy: 
+Recently, for one of my side projects I had the need of create a totally different database from another one. Insertions should 
+occur in the order appears in database A, so when there is an insertion in database A must be another in the same order in database B, 
+but the data coming from A should be enriched before inserted in B. To do it, I choose Kafka because gives me what I need 
+and to have fault tolerance a created a cluster. The cluster has the following anatomy: 
 
 ![Kafka Cluster](/assets/kafka_cluster.png)
 
 As usual, one of the server is going to act as the "leader" and the others as the "followers". If the leader stop running 
-one of the followers will automatically become the new leader.
+one of the followers will automatically become the new leader. We have to carefully configure each broker with the correct 
+parameters in order to fill our needs in the way we want. 
 
-Knowing that, we have to carefully configure each broker with the correct parameters in order to fill our needs in the way we want. 
-For the time I'm writting this the last version of Kafka is 2.5.0 and is the one I'm going to use here (**kafka_2.13-2.5.0.tgz**).
+For the time I'm writing this the last version of Kafka is 2.5.0 and is the one I'm going to use here (**kafka_2.13-2.5.0.tgz**). 
+I assume that you have already installed java in your machines. I used Ubuntu 18.04 for this tutorial.
 
 ### Make a ZooKeeper cluster
 
-Kafka use ZooKeeper to persist its metadata: location of partitions or configuration of the topics (eventually this dependency 
-will be removed [Confluent post talking about it](https://www.confluent.io/blog/removing-zookeeper-dependency-in-kafka/)). So first, we need 
+Kafka use ZooKeeper to persist its metadata: location of partitions and configuration of the topics (eventually this dependency 
+will be removed, [Confluent post talking about it](https://www.confluent.io/blog/removing-zookeeper-dependency-in-kafka/)). So first, we need 
 to create a ZooKeeper cluster (`ensemble` how is called by ZooKeeper). There is no need to download ZooKeeper because it's bundled with Kafka.
 
-I initialize a git repository within the `config` folder inside the Kafka main folder, this gives me two advantages (among others):
+**TIP:** I always initialize a git repository within the folder where config files lives in the tools that I use. I encourage you 
+to do it inside the Kafka `config` folder (located in the root folder), this gives you two advantages (among others):
 
-1. I have available the config in all servers.
-2. I will track the changes in config if needed.
+1. Centralized config.
+2. Changes tracking.
 
 Now, edit `zookeeper.properties` file inside `config` folder with the following:
 
@@ -111,14 +114,11 @@ zookeeper.connect=<IP1>:2181,<IP2>:2181,<IP3>:2181
 # Log configuration
 num.partitions=1
 default.replication.factor=3
-log.dir=/path/you/want
+log.dirs=/path/you/want # be sure you have write permissions
  
 # Other configurations
 broker.id=0 # 1 and 2 for the others
-listeners=[list of listeners]
-auto.create.topics.enable=false
 min.insync.replicas=2
-queued.max.requests=[number of concurrent requests]
 {% endhighlight %}
 
 Every config option means:
@@ -134,7 +134,61 @@ defines the number of copies of a topic in a Kafka cluster, in our case we have 
 
 **broker.id:** An integer representing the id of the broker. Start with 0 and increment by 1 for each new broker.
 
+**min.insync.replicas:** When a producer sets acks to "all" (or "-1"), min.insync.replicas specifies the minimum number 
+of replicas that must acknowledge a write for the write to be considered successful. If this minimum cannot be met, then the 
+producer will raise an exception (either NotEnoughReplicas or NotEnoughReplicasAfterAppend). When used together, min.insync.replicas 
+and acks allow you to enforce greater durability guarantees. A typical scenario would be to create a topic with a replication 
+factor of 3, set min.insync.replicas to 2, and produce with acks of "all". This will ensure that the producer raises an exception if a 
+majority of replicas do not receive a write.
+
+With this config you are ready to go, just copy and paste the config file in each machine and change the `broker.id`. Then, execute the 
+following command in each machine:
+ 
+{% highlight bash %}
+bin/kafka-server-start.sh config/server.properties # machine 1
+bin/kafka-server-start.sh config/server2.properties # machine 2
+bin/kafka-server-start.sh config/server3.properties # machine 3
+{% endhighlight %}
+
+ZooKeeper will know that a Kafka cluster is created, you could ask to ZooKeeper if the cluster is running with the following command:
+
+{% highlight bash %}
+zookeeper-shell.sh <IP1>:2181 ls /brokers/ids
+{% endhighlight %}
+
+...and you should see something like this:
+
+{% highlight bash %}
+Connecting to <IP1>:2181
+
+WATCHER::
+
+WatchedEvent state:SyncConnected type:None path:null
+[0, 1, 2]
+{% endhighlight %}
+
+As you can see there are three brokers listed `[0, 1, 2]` now you can start using your cluster, but if you think about it 
+everyone could use your cluster that is not cool. **For production environments you must secure the cluster**.
+
+### Secure you cluster
+
+I use Let's Encrypt to enable SSL in my servers, for each machine I have a domain name and certificates for them, I will use 
+these certificates to enable SSL in the Kafka cluster and Authentication also.
+
+First, you have to create a keystore for each Kafka server, you have to generate a pkcs12 file from your .pem files. Usually, 
+your pem files are located in `/etc/letsencrypt/live/[YOUR_DOMAIN]`, let's move to this folder and execute the following: 
+
+{% highlight bash %}
+openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -name kafka1 -CAfile chain.pem -caname root
+{% endhighlight %}
+
+...then import the pkcs12 file into a keystore:
+
+{% highlight bash %}
+keytool -importkeystore -deststorepass 'STRONG_PASS' -destkeypass 'STRONG_PASS' -destkeystore keystore.jks -srckeystore keystore.p12 -srcstoretype PKCS12 -srcstorepass 'STRONG_PASS' -alias kafka1 -ext SAN=DNS:{FQDN}
+{% endhighlight %}
+
 ### References
 
-[Kafka Documentation](https://kafka.apache.org/25/documentation.html)
-[ZooKeeper Documentation](https://zookeeper.apache.org/doc/r3.5.7/)
+1. [Kafka Documentation](https://kafka.apache.org/25/documentation.html)
+2. [ZooKeeper Documentation](https://zookeeper.apache.org/doc/r3.5.7/)

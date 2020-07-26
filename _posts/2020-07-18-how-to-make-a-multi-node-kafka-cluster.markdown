@@ -188,6 +188,21 @@ openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -n
 keytool -importkeystore -deststorepass 'STRONG_PASS' -destkeypass 'STRONG_PASS' -destkeystore keystore.jks -srckeystore keystore.p12 -srcstoretype PKCS12 -srcstorepass 'STRONG_PASS' -alias kafka1 -ext SAN=DNS:{FQDN}
 {% endhighlight %}
 
+To check that everything is inside the keystore, execute:
+
+{% highlight bash %}
+keytool -list -v -keystore keystore.jks
+{% endhighlight %}
+
+...also add the certificate to the trust store:
+
+{% highlight bash %}
+keytool -trustcacerts -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt -importcert -file /etc/letsencrypt/live/YOURDOMAIN/chain.pem
+{% endhighlight %}
+
+Now you have the keystore generated from your pem files. Remember that each three months you have to do the same thing to update 
+your certificates, also remember to do these steps in every machine.
+
 ### References
 
 1. [Kafka Documentation](https://kafka.apache.org/25/documentation.html)

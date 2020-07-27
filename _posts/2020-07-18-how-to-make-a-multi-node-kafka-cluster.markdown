@@ -8,7 +8,7 @@ categories: kafka zookeeper distributed-systems
 
 Apache Kafka (from now on just Kafka) is one of the most frequently used message buses nowadays, and the reason is because 
 has some key features that makes it the perfect tool in some scenarios (preserve consumption order per partition and allows parallel 
-consumption = scales very well). Usually, is used as a Messaging System (for microservices architectures, decoupling monoliths, etc), 
+consumption = scales very well). Usually, is used as a Messaging System (for microservices architectures, decoupling applications, etc), 
 but could even be used as a Storage System or for Stream Processing. 
 
 In this tutorial I will show you how to create a multi-node Kafka cluster with three different machines. Although, this tutorial is for administrators 
@@ -170,10 +170,10 @@ WatchedEvent state:SyncConnected type:None path:null
 As you can see there are three brokers listed `[0, 1, 2]` now you can start using your cluster, but if you think about it 
 everyone could use your cluster that is not cool. **For production environments you must secure the cluster**.
 
-### Secure you cluster
+### Enabling SSL with Let's Encrypt
 
 I use Let's Encrypt to enable SSL in my servers, for each machine I have a domain name and certificates for them, I will use 
-these certificates to enable SSL in the Kafka cluster and Authentication also.
+these certificates to enable SSL in the Kafka cluster.
 
 First, you have to create a keystore for each Kafka server, you have to generate a pkcs12 file from your .pem files. Usually, 
 your pem files are located in `/etc/letsencrypt/live/[YOUR_DOMAIN]`, let's move to this folder and execute the following: 
@@ -182,10 +182,10 @@ your pem files are located in `/etc/letsencrypt/live/[YOUR_DOMAIN]`, let's move 
 openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out keystore.p12 -name kafka1 -CAfile chain.pem -caname root
 {% endhighlight %}
 
-...then import the pkcs12 file into a keystore:
+...then import the pkcs12 file into a keystore (change example.com with your domain name and 'STRONG_PASS' for the one that you provide in the previous step):
 
 {% highlight bash %}
-keytool -importkeystore -deststorepass 'STRONG_PASS' -destkeypass 'STRONG_PASS' -destkeystore keystore.jks -srckeystore keystore.p12 -srcstoretype PKCS12 -srcstorepass 'STRONG_PASS' -alias kafka1 -ext SAN=DNS:{FQDN}
+keytool -importkeystore -deststorepass 'STRONG_PASS' -destkeypass 'STRONG_PASS' -destkeystore keystore.jks -deststoretype JKS -srckeystore keystore.p12 -srcstoretype PKCS12 -srcstorepass 'STRONG_PASS' -alias kafka1 -ext SAN=DNS:example.com
 {% endhighlight %}
 
 To check that everything is inside the keystore, execute:
@@ -200,10 +200,64 @@ keytool -list -v -keystore keystore.jks
 keytool -trustcacerts -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt -importcert -file /etc/letsencrypt/live/YOURDOMAIN/chain.pem
 {% endhighlight %}
 
-Now you have the keystore generated from your pem files. Remember that each three months you have to do the same thing to update 
+**ALTERNATIVE:** you could, instead of add the certificate to the trust store of the jdk, create a truststore, this as simple as create 
+it with the `chain.pem` file:
+
+{% highlight bash %}
+keytool -keystore truststore.jks -alias kafka1 -import -file chain.pem
+{% endhighlight %}
+
+...you will be prompted with a password for the truststore, also you have to put yes when ask if you want to trust it.
+
+**ALTERNATIVE2:** another way to generate the truststore is by generating the truststore from your domain name:
+
+{% highlight bash %}
+openssl s_client -connect example.com:443 -showcerts </dev/null 2>/dev/null | openssl x509 -outform DER > example.der
+openssl x509 -inform der -in example.der -out example.pem
+keytool -import -alias example -keystore truststore.jks -file example.pem -storepass 'STRONG_PASS' -noprompt
+{% endhighlight %}
+
+Now you have the keystore and truststore generated from your pem files. Remember that each three months you have to do the same thing to update 
 your certificates, also remember to do these steps in every machine.
+
+The final step you have to do is to add the paths of our keystore and truststore to the broker config server, open your `server.properties` 
+(do it for every broker) and add the following:
+
+{% highlight bash %}
+listeners=SSL://example.com:9092
+ssl.keystore.location=/path/to/keystore.jks
+ssl.keystore.password=STRONG_PASS
+ssl.key.password=STRONG_PASS
+ssl.truststore.location=/path/to/truststore.jks # in case you add the certificate to the jdk put '/path/to/jdk/lib/security/cacerts'
+ssl.truststore.password=STRONG_PASS # if you use cacerts put 'changeit' (default password of cacerts)
+ssl.secure.random.implementation=SHA1PRNG
+security.inter.broker.protocol=SSL
+
+advertised.listeners=SSL://example.com:9092
+{% endhighlight %}
+
+Changes are also needed for our client configurations (producers and consumers):
+
+{% highlight bash %}
+...
+security.protocol=SSL
+ssl.truststore.location=/path/to/truststore.jks
+ssl.truststore.password=STRONG_PASS
+...
+{% endhighlight %}
+
+With all of this you have at least secured your cluster against man-in-the-middle attacks, you could continue adding 
+SSL Authentication (two ways authentication), SASL Authentication and Authorization through ACL.
+
+### Conclusion
+
+Creating a Kafka cluster is easy, maintain, administrate and securing it by your own could be a pain in the neck, as you can see in this post 
+I only created a simple cluster of Kafka and added SSL to it, but I warn you that you will have to work towards the best configuration that fill your 
+needs and this is something that could not be done in one single day.
 
 ### References
 
 1. [Kafka Documentation](https://kafka.apache.org/25/documentation.html)
 2. [ZooKeeper Documentation](https://zookeeper.apache.org/doc/r3.5.7/)
+3. [Vertica Kafka Configuration](https://www.vertica.com/docs/10.0.x/HTML/Content/Authoring/KafkaIntegrationGuide/TLS-SSL/KafkaTLS-SSLExamplePart3ConfigureKafka.htm?tocpath=Integrating%20with%20Apache%20Kafka%7CUsing%20TLS%2FSSL%20Encryption%20with%20Kafka%7C_____7)
+4. [Oracle keytool docs for JDK14](https://docs.oracle.com/en/java/javase/14/docs/specs/man/keytool.html)

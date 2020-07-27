@@ -194,7 +194,7 @@ To check that everything is inside the keystore, execute:
 keytool -list -v -keystore keystore.jks
 {% endhighlight %}
 
-...also add the certificate to the trust store:
+...also add the certificate to the JDK truststore:
 
 {% highlight bash %}
 keytool -trustcacerts -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt -importcert -file /etc/letsencrypt/live/YOURDOMAIN/chain.pem
@@ -218,7 +218,7 @@ keytool -import -alias example -keystore truststore.jks -file example.pem -store
 {% endhighlight %}
 
 Now you have the keystore and truststore generated from your pem files. Remember that each three months you have to do the same thing to update 
-your certificates, also remember to do these steps in every machine.
+your certificates, also remember to do these steps in every machine (the best way to not forget that is automating these steps in each machine).
 
 The final step you have to do is to add the paths of our keystore and truststore to the broker config server, open your `server.properties` 
 (do it for every broker) and add the following:

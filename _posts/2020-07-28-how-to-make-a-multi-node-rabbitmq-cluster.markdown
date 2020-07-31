@@ -6,14 +6,15 @@ categories: rabbitmq distributed-systems
 ---
 ### 1. Introduction
 
-Several days ago, [I made a tutorial](/_posts/2020-07-18-how-to-make-a-multi-node-kafka-cluster.markdown) for how to install Apache Kafka in a multi node cluster, what's wrong with that? 
-Well, if you have cheap VPS machines like me, maybe you don't want to install Kafka due to his high hardware requirements 
-that needs or because you want to use RabbitMQ over Apache Kafka. 
+Several days ago, [I made a tutorial](/kafka/zookeeper/distributed-systems/2020/07/18/how-to-make-a-multi-node-kafka-cluster.html) 
+of how to install Apache Kafka in a multi node cluster, what's wrong with that? Well, if you have cheap VPS machines like 
+me, maybe you don't want to install Kafka due to the high hardware requirements it needs (and ZooKeeper) or because you want 
+to use RabbitMQ over Apache Kafka. 
 
-Whatever the reason you have, I'm going to create another tutorial to guide you (and my in the future) through the installation 
+Whatever the reason you have, I'm going to create another tutorial to guide you (and me in the future) through the installation 
 of a multi node cluster of RabbitMQ.
 
-For this tutorial I'm going to use Ubuntu 18.04 as OS in each machine and only two machines for the cluster.
+For this tutorial I'm going to use Ubuntu 18.04 as OS in each machine and two machines for the cluster.
 
 ### 2. Preparing the machines
 
@@ -170,10 +171,38 @@ sudo vim /etc/rabbitmq/rabbitmq.conf
 With the following content:
 
 {% highlight bash %}
-listeners.tcp.default = 5672
+listeners.tcp.default = localhost:5672
+{% endhighlight %}
+
+For security reasons we should keep each RabbitMQ instance with the AMQP port listening in localhost, we will configure a reverse proxy with Nginx 
+and add SSL Termination on top of it. Additionally, RabbitMQ have a port listening in all interfaces for inter-node communication, `25672` by default, 
+you could also put it behind the proxy, but I will keep it listening in all interfaces. 
+
+If everything went well, you should see the RabbitMQ server running: 
+
+{% highlight bash %}
+sudo service rabbitmq-server status
+{% endhighlight %}
+
+If not, you could start it with:
+
+{% highlight bash %}
+sudo service rabbitmq-server start
+{% endhighlight %}
+
+Also, you could see the logs in:
+
+{% highlight bash %}
+cat /var/log/rabbitmq/rabbit@mydomain.log
 {% endhighlight %}
 
 ### 4. Creating the cluster
+
+For each node execute:
+
+{% highlight bash %}
+sudo rabbitmq-server -detached
+{% endhighlight %}
 
 ### 5. SSL Termination with Let's Encrypt and Nginx
 

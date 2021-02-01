@@ -15,7 +15,7 @@ I used before, and we will see the possible problems (and solutions) that you co
 
 The easier one, get your code, cut it and paste it in a separated repository but, **with a shared database**, in the end all of your 
 entities are related with others from other teams and departments. This seems pretty straightforward at the beginning, 
-but you have to think about your use case and the tradeoffs carefully.
+but you have to think about your use case and the trade-offs carefully.
 
 * Are your services being used for thousands or millions of users? 
   * If the answer is no, maybe this approach could work for you.
@@ -29,14 +29,15 @@ duplicate code right? Well... in the end no, but you could create a worse situat
 
 Ok ok, you have your new shine repository, your new CI/CD pipelines, you have created two or three libraries and 
 then your team start developing services, but a problem arises, one of your core libraries have a bug, what are you going to 
-do with those fifteen services you have now? Well you could update one by one the dependencies or create a special job 
-to make an update for every service. But more problems appears:
+do with those fifteen services you have now? You could update one by one the dependencies or create a special job 
+to make an update for every service, but more problems appears:
 
 * What happen if someone is using entities and repositories that shouldn't be used? 
   * You could move them to the service that belongs or don't accept the PR of that team. Set the boundaries of your libraries 
   is crucial.
 * What happen if someone has to create an index in a 10 million records table/collection?
-  * You have to create some sort of communication or ticket system to tackle this and create the index in the background.
+  * You have to create some sort of communication or ticket system to tackle this and create the index in the background. This 
+  problem could potentially put down all services depending on the same database.
 * What if one or two of your services is having a lot of success?
   * You could scalate horizontally those services, but your database now can't handle that traffic.
 * Are your libraries cohesive and low coupled? 
@@ -47,7 +48,30 @@ small, but if you are in another case it's worth to mention that there are other
 
 ### 3. Separated services and database (Idea 2)
 
-Hablar sobre el approach de hacer servicios y comunicarlos por HTTP
+Your services doubled their traffic, a new team comes to the company and the problems are growing, you and your team start thinking 
+about the idea of be self-contained then, database separation is the way to go. 
+
+What are the trade-offs here? One could say duplication of data (it could be a problem if you have thousands of GB of data), 
+another could say maintenance of another database (this could be true if you create the database in a separate database server), 
+another says incremental of costs (development costs and more iron maybe it's needed), but the hardest trade-off here is the data synchronisation.
+
+Knowing who will be the master and the slave is the first step, the following one is to think about the communication protocol 
+between these services: HTTP or message broker, for this second idea we will choose the HTTP flavor, and the third step is to 
+choose the information to be needed by the slave service, usually is the minimum required, a subset of the master data (e.g. 
+email and address from a customer data table/collection).
+
+In every CRUD operation to the data you must replicate this change to the slave service, using an async HTTP client with a 
+retry policy should be enough but if your services have dependencies between more than one service this will be a mesh. 
+
+Also, you have to maintain the retro-compatibility in the APIs to not break anything, in the **Idea 1** this is done by communication 
+channels between teams and telling them the change on the database, here is the same and you could follow two ways, the first 
+one is done in three steps always:
+
+1. Add new a field and deprecated old one.
+2. Communicate to the other teams to let then update.
+3. When they are done (or a due date is reached), remove the deprecated field of step 1.
+
+The other way is to version the APIs, this is usually used for big changes in the API.
 
 ### 4. Separated services and database with a message broker (Idea 3)
 

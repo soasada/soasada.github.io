@@ -4,14 +4,14 @@ title:  "Database Per Service"
 date:   2021-01-26 08:06:36 +0200
 categories: databases distributed-systems
 ---
-### 1. Introduction
+### Introduction
 
 If you have ever worked in a big company with small teams, you may have had the need to be as much isolated as possible 
 from the others. Things like: releases, changes to a shared data model, high coupled code, scaling issues, etc... 
 soon or later will be problems caused by the dependencies between teams. In this blog post I will explore some ideas that 
 I used before, and we will see the possible problems (and solutions) that you could face if you do the same.
 
-### 2. Separated repository (Idea 1)
+### Separated repository (Idea 1)
 
 The easier one, get your code, cut it and paste it in a separated repository but, **with a shared database**, in the end all of your 
 entities are related with others from other teams and departments. This seems pretty straightforward at the beginning, 
@@ -46,10 +46,11 @@ to make an update for every service, but more problems appears:
 Even with all the possible problems that you could have with this approach, it's still a good solution if your use case is 
 small, but if you are in another case it's worth to mention that there are other possible solutions.
 
-### 3. Separated services and database (Idea 2)
+### Separated services and database (Idea 2)
 
-Your services doubled their traffic, a new team comes to the company and the problems are growing, you and your team start thinking 
-about the idea of be self-contained then, database separation is the way to go. 
+Your services doubled their traffic, a new team comes to the company and problems are growing, you and your team start thinking 
+about the idea of be self-contained then, database separation is the way to go. Be completely isolated makes a lot of sense 
+if you want to scale your services and release them apart from the others. 
 
 What are the trade-offs here? One could say duplication of data (it could be a problem if you have thousands of GB of data), 
 another could say maintenance of another database (this could be true if you create the database in a separate database server), 
@@ -61,22 +62,27 @@ choose the information to be needed by the slave service, usually is the minimum
 email and address from a customer data table/collection).
 
 In every CRUD operation to the data you must replicate this change to the slave service, using an async HTTP client with a 
-retry policy should be enough but if your services have dependencies between more than one service this will be a mesh. 
+retry policy could work but if your services have dependencies between more than one service this will be a mesh. Also, 
+if one of the services is down, and your fail to sync your data (even with the retries), you need some kind of mechanism to 
+continue in the same point you were at the beginning of the failure. On the other hand, due to the asynchronicity of the 
+data sync process between services you will face another problem: eventual consistency, so you have to choose between synchronous 
+data sync process or async one, dependending on your use case.
 
-Also, you have to maintain the retro-compatibility in the APIs to not break anything, in the **Idea 1** this is done by communication 
-channels between teams and telling them the change on the database, here is the same and you could follow two ways, the first 
+Additionally, you have to maintain the retro-compatibility in the APIs, in the **Idea 1** this is done by communication 
+channels between teams and telling them the change on the database, here is the same, and you could follow two ways, the first 
 one is done in three steps always:
 
-1. Add new a field and deprecated old one.
-2. Communicate to the other teams to let then update.
+1. If you have to add a new field you don't have to do anything, if you have to update or remove one field, add new a field (with the updated info) and/or deprecated old one.
+2. Communicate to the other teams to let them update.
 3. When they are done (or a due date is reached), remove the deprecated field of step 1.
 
 The other way is to version the APIs, this is usually used for big changes in the API.
 
-### 4. Separated services and database with a message broker (Idea 3)
+### Separated services and database with a message broker (Idea 3)
 
 ### Conclusion
 
 ### References
 
 1. [Cohesion and Coupling: the difference](https://enterprisecraftsmanship.com/posts/cohesion-coupling-difference)
+2. [Eventual Consistency In Plain English](https://stackoverflow.com/questions/10078540/eventual-consistency-in-plain-english)

@@ -13,7 +13,7 @@ I used before, and we will see the possible problems (and solutions) that you co
 
 ### Separated repository (Idea 1)
 
-The easier one, get your code, cut it and paste it in a separated repository but, **with a shared database**, in the end all of your 
+The easier one, get your code, cut it and paste it in a separated repository, but **with a shared database**, in the end all of your 
 entities are related with others from other teams and departments. This seems pretty straightforward at the beginning, 
 but you have to think about your use case and the trade-offs carefully.
 
@@ -25,12 +25,12 @@ but you have to think about your use case and the trade-offs carefully.
 So your team starts working in the new approach and realize that your code will be duplicated in your new repository and 
 in the old one, you and your team decide to do some shared libraries to put common things together 
 and available for everyone: entities, repositories and even services are going to be shared. You don't want to 
-duplicate code right? Well... in the end no, but you could create a worse situation than duplicate code: the famous dependency hell. 
+duplicate code right? Well... in the end no, but you could create a worse situation than duplicate code.
 
 Ok ok, you have your new shine repository, your new CI/CD pipelines, you have created two or three libraries and 
-then your team start developing services, but a problem arises, one of your core libraries have a bug, what are you going to 
+then your team start developing services but a problem arises, one of your core libraries have a bug, what are you going to 
 do with those fifteen services you have now? You could update one by one the dependencies or create a special job 
-to make an update for every service, but more problems appears:
+to make an update for every service (believe me that this is not easy), and you fall into the dependency hell but more problems appears:
 
 * What happen if someone is using entities and repositories that shouldn't be used? 
   * You could move them to the service that belongs or don't accept the PR of that team. Set the boundaries of your libraries 
@@ -49,7 +49,7 @@ small, but if you are in another case it's worth to mention that there are other
 ### Separated services and database (Idea 2)
 
 Your services doubled their traffic, a new team comes to the company and problems are growing, you and your team start thinking 
-about the idea of be self-contained then, database separation is the way to go. Be completely isolated makes a lot of sense 
+about the idea of be self-contained, then database separation is the way to go. Be completely isolated makes a lot of sense 
 if you want to scale your services and release them apart from the others. 
 
 What are the trade-offs here? One could say duplication of data (it could be a problem if you have thousands of GB of data), 
@@ -61,24 +61,30 @@ between these services: HTTP or message broker, for this second idea we will cho
 choose the information to be needed by the slave service, usually is the minimum required, a subset of the master data (e.g. 
 email and address from a customer data table/collection).
 
-In every CRUD operation to the data you must replicate this change to the slave service, using an async HTTP client with a 
-retry policy could work but if your services have dependencies between more than one service this will be a mesh. Also, 
-if one of the services is down, and your fail to sync your data (even with the retries), you need some kind of mechanism to 
+In every operation to the data that change it, you must replicate this change to the slave service. Using an async HTTP client with a 
+retry policy could work, but if your services have dependencies between more than one service this will be a mesh. Also, 
+if one of the services is down, and you fail to sync your data (even with the retries), you need some kind of mechanism to 
 continue in the same point you were at the beginning of the failure. On the other hand, due to the asynchronicity of the 
-data sync process between services you will face another problem: eventual consistency, so you have to choose between synchronous 
-data sync process or async one, dependending on your use case.
+data sync process you will face another problem: eventual consistency, so you have to choose between synchronous 
+data sync process or async one, depending on your use case.
 
 Additionally, you have to maintain the retro-compatibility in the APIs, in the **Idea 1** this is done by communication 
 channels between teams and telling them the change on the database, here is the same, and you could follow two ways, the first 
 one is done in three steps always:
 
-1. If you have to add a new field you don't have to do anything, if you have to update or remove one field, add new a field (with the updated info) and/or deprecated old one.
-2. Communicate to the other teams to let them update.
+1. If you have to add a new field you don't have to do anything, if you have to update or remove one field, add a new field (with the updated info) and/or deprecated old one.
+2. Communicate to other teams to let them update.
 3. When they are done (or a due date is reached), remove the deprecated field of step 1.
 
 The other way is to version the APIs, this is usually used for big changes in the API.
 
 ### Separated services and database with a message broker (Idea 3)
+
+Finally, you want to avoid the data loss, failure in HTTP calls between long service chains and the scale problems of the 
+**Idea 2**. A message broker come to the table, instead of doing the synchronisation with HTTP calls you could create the 
+channel with a publisher/subscriber tool, all the fancy features like failure tolerance, high availability and scalability 
+are covered in such tools and will free you about all of your problems... but all of this is priceless? Sure not, the first 
+thing that you have to know is that this solution is the most advanced one and the most complex one.
 
 ### Conclusion
 

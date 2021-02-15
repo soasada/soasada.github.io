@@ -20,6 +20,7 @@ List of side projects so far:
   * Tiny library for make microservices with undertow, raw JDBC and async JSON parsing.
 4. **test.popokis.com**
   * A web application done with Kotlin coroutines + Spring Webflux + Spring Security.
+
 ### Professional Experience
 
 | When     |      Where      |  What |

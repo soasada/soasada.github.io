@@ -46,7 +46,7 @@ to make an update for every service (believe me that this is not easy), and you 
 Even with all the possible problems that you could have with this approach, it's still a good solution if your use case is 
 small, but if you are in another case it's worth to mention that there are other possible solutions.
 
-### Separated services and database (Idea 2)
+### Separated services and database HTTP (Idea 2)
 
 Your services doubled their traffic, a new team comes to the company and problems are growing, you and your team start thinking 
 about the idea of be self-contained, then database separation is the way to go. Be completely isolated makes a lot of sense 
@@ -78,7 +78,7 @@ one is done in three steps always:
 
 The other way is to version the APIs, this is usually used for big changes in the API.
 
-### Separated services and database with a message broker (Idea 3)
+### Separated services and database Message Broker (Idea 3)
 
 Finally, you want to avoid the data loss, failure in HTTP calls between long service chains and the scale problems of the 
 **Idea 2**. A message broker comes to the table, instead of doing the synchronisation with HTTP calls you could create the 

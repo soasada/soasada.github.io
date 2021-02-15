@@ -22,7 +22,7 @@ but you have to think about your use case and the trade-offs carefully.
 * How many teams will be working on the database? 
   * If the answer is more than 1, maybe this approach is not for you.
 
-So your team starts working in the new approach and realize that your code will be duplicated in your new repository and 
+So your team start working on the new approach and realize that your code will be duplicated in your new repository and 
 in the old one, you and your team decide to do some shared libraries to put common things together 
 and available for everyone: entities, repositories and even services are going to be shared. You don't want to 
 duplicate code right? Well... in the end no, but you could create a worse situation than duplicate code.
@@ -81,12 +81,41 @@ The other way is to version the APIs, this is usually used for big changes in th
 ### Separated services and database with a message broker (Idea 3)
 
 Finally, you want to avoid the data loss, failure in HTTP calls between long service chains and the scale problems of the 
-**Idea 2**. A message broker come to the table, instead of doing the synchronisation with HTTP calls you could create the 
+**Idea 2**. A message broker comes to the table, instead of doing the synchronisation with HTTP calls you could create the 
 channel with a publisher/subscriber tool, all the fancy features like failure tolerance, high availability and scalability 
 are covered in such tools and will free you about all of your problems... but all of this is priceless? Sure not, the first 
 thing that you have to know is that this solution is the most advanced one and the most complex one.
 
+If you still think that this approach is for your use case, ask yourself the following question:
+
+- Do I need Pub/Sub solution or queue one? 
+  - To answer this you need to know what are the differences between the two approaches and then choose a tool for it. 
+    A Pub/Sub tool is able to produce messages from more than one producer, and are consumed by more than one consumer, a 
+    queue tool is more for a point-to-point communication. There are more differences but in general this is the most 
+    important one, also there are differences between tools but this is another story.
+    
+When you have chosen the approach you need to follow the same path of **Idea 2**:
+- Know who will act as master and who as slave.
+- Maintain retro-compatibility with the flow Add > Communicate > Delete.
+- Create the communication link between master and slave doing producer and consumer in both sides.
+
+The possible problems that could appear could be:
+- **Duplicate messages consumed:** What happen if your producers have a problem (network issue or a bug in the code) and 
+  are sending duplicated messages? If your use case can't tolerate this situation you should build your consumers idempotent. 
+  You could implement idempotent consumers by using idempotent code (I mean doing or use functions that are idempotent) or 
+  implementing a cache giving a unique ID for each produced message, and when a message arrives a consumer you could check 
+  against the cache if the message was consumed previously with ID comparison.
+- **Producer failure:** If your application that is producing messages is down for a while, your consumers will be idle for 
+  a period of time, you could monitor this situation and fix it as soon as possible.
+- **Consumer failure:** The same happens if consumers are down, this will create a lag in the message consumption and 
+  also should be monitored.
+
 ### Conclusion
+
+Everything in this field is a trade-off, before choosing an idea or approach you must have a deep knowledge of the domain 
+and the problem you are trying to solve, the only way of improving in this regard is to try and experiment but sometimes this 
+is not possible. I had been working in projects where the **Idea 1** was a totally success and in others where it was a 
+big big mistake, remember to not be drive by the hype of new tools and keep things simple.
 
 ### References
 

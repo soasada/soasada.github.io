@@ -47,3 +47,7 @@ As you can see, the process of maintaining backward compatibility is always the 
 
 This process could be use when evolving an RESTful API, a database table or an event schema. **But as usual, use it when makes 
 sense**.
+
+### References
+
+1. [API Expand-Contract Pattern](https://martinfowler.com/bliki/ParallelChange.html)

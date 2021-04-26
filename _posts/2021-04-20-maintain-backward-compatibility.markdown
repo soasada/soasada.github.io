@@ -50,4 +50,5 @@ sense**.
 
 ### References
 
-1. [API Expand-Contract Pattern](https://martinfowler.com/bliki/ParallelChange.html)
+1. [The Limited Red Society (2010)](https://www.infoq.com/presentations/The-Limited-Red-Society)
+2. [API Expand-Contract Pattern (2014)](https://martinfowler.com/bliki/ParallelChange.html)

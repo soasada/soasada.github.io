@@ -5,7 +5,7 @@ date:   2023-06-18 20:34:51 +0200
 categories: good-practices
 ---
 
-While working in my own code or code written by others I tend to ask myself: "Why?".
+While working on my own code or code written by others I tend to ask myself: "Why?".
 
 There are lots of reasons my past self or others did it: a lack of expertise? or 
 maybe a tight schedule, was there a bug related? or some features not covered by your 

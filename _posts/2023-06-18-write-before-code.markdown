@@ -11,7 +11,7 @@ There are lots of reasons my past self or others did it: a lack of expertise? or
 maybe a tight schedule, was there a bug related? or some features not covered by your 
 dependencies? I don't know, I can't remember or the people who wrote it are not here now.
 
-**Many times code does not speak by itself**. Write a comment, comment what 
+Many times, **code does not speak by itself**. Write a comment, comment what 
 makes sense, don't be lazy, you will thank yourself in the future. 
 
 Read it, before moving to the next thing, read your comment and ask yourself if it is answering the 
